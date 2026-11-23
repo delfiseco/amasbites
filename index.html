@@ -196,7 +196,7 @@ footer p{color:var(--soft);font-size:15px}
 <section class="band" id="pedido">
   <div class="wrap">
     <h2>Hacé tu pedido</h2>
-    <p class="lead">Sumá las cajas que quieras, copiá el mensaje y mandánoslo por Instagram a @amas.bites.</p>
+    <p class="lead">Sumá las cajas que quieras y mandanos el pedido por WhatsApp con un toque.</p>
     <div class="order">
       <div class="items" id="items"></div>
       <aside class="sum" aria-live="polite">
@@ -207,10 +207,10 @@ footer p{color:var(--soft);font-size:15px}
           <textarea id="notes" placeholder="Ej: la de 6 con 2 white, 2 milk y 2 black"></textarea>
         </label>
         <div class="btns">
-          <button class="btn fill" id="copy" type="button">Copiar mensaje</button>
-          <a class="btn" href="https://ig.me/m/amas.bites" target="_blank" rel="noopener">Abrir Instagram</a>
+          <a class="btn fill" id="send" href="https://wa.me/5492235468840" target="_blank" rel="noopener">Enviar mensaje</a>
+          <a class="btn" href="https://instagram.com/amas.bars" target="_blank" rel="noopener">Instagram</a>
         </div>
-        <p class="note" id="copyNote">Escribinos a @amas.bites y pegá el mensaje.</p>
+        <p class="note" id="copyNote">Se abre WhatsApp con tu pedido ya escrito: 223 546-8840.</p>
       </aside>
     </div>
   </div>
@@ -219,7 +219,7 @@ footer p{color:var(--soft);font-size:15px}
 <footer class="band">
   <div class="wrap">
     <a class="logo" href="#inicio"><b>A+</b><span>Dates &amp; Bites</span><svg><use href="#heart"/></svg></a>
-    <p>Pedidos por Instagram: <a href="https://instagram.com/amas.bites" target="_blank" rel="noopener">@amas.bites</a></p>
+    <p>Pedidos por WhatsApp: <a href="https://wa.me/5492235468840" target="_blank" rel="noopener">223 546-8840</a> · Instagram: <a href="https://instagram.com/amas.bars" target="_blank" rel="noopener">@amas.bars</a></p>
   </div>
 </footer>
 
@@ -352,15 +352,21 @@ $('#items').addEventListener('click', e=>{
   const id=b.dataset.id; q[id]=Math.max(0,(q[id]||0)+Number(b.dataset.d)); if(!q[id]) delete q[id];
   render();
 });
-$('#copy').addEventListener('click', async ()=>{
-  const {chosen,total}=render(), note=$('#copyNote');
-  if(!chosen.length){ note.textContent='Sumá al menos una caja para armar el mensaje.'; return; }
+const buildMsg = (chosen,total) => {
   const extra=$('#notes').value.trim();
-  const msg=`¡Hola! Quiero hacer un pedido:\n${chosen.map(([m,n])=>`• ${n} × ${m.name} – ${m.sub}`).join('\n')}\nTotal: ${fmt(total)}${extra?`\nAclaraciones: ${extra}`:''}`;
-  try{ await navigator.clipboard.writeText(msg); note.textContent='¡Mensaje copiado! Ahora abrí Instagram y pegalo en un mensaje a @amas.bites.'; }
-  catch(err){ note.textContent='No se pudo copiar. Este es el mensaje: '+msg.replace(/\n/g,' · '); }
+  return `¡Hola! Quiero hacer un pedido:\n${chosen.map(([m,n])=>`• ${n} × ${m.name} – ${m.sub}`).join('\n')}\nTotal: ${fmt(total)}${extra?`\nAclaraciones: ${extra}`:''}`;
+};
+const updateLink = () => {
+  const {chosen,total}=render();
+  $('#send').href = 'https://wa.me/5492235468840' + (chosen.length ? '?text=' + encodeURIComponent(buildMsg(chosen,total)) : '');
+  return chosen.length;
+};
+$('#items').addEventListener('click', updateLink);
+$('#notes').addEventListener('input', updateLink);
+$('#send').addEventListener('click', e=>{
+  if(!updateLink()){ e.preventDefault(); $('#copyNote').textContent='Sumá al menos una caja para armar el pedido.'; }
 });
-render();
+updateLink();
 }
 </script>
 </body>
