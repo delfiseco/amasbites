@@ -326,10 +326,8 @@ const menu = [
   ...lines.flatMap(l=>[6,9,12].map(n=>({id:`${l.id}${n}`, name:`Caja × ${n}`, sub:l.title, price:l.p[n]}))),
   ...specials.map(s=>({id:s.id, name:s.title, sub:s.d, price:s.price}))
 ];
-let q = {};
-try { q = JSON.parse(localStorage.getItem('aplus-pedido')||'{}') || {}; } catch(e) { q = {}; }
-if(!Object.keys(q).length) q = {deg:1};
-const save = () => { try{ localStorage.setItem('aplus-pedido', JSON.stringify(q)); }catch(e){} };
+const q = {};
+const save = () => {};
 
 $('#items').innerHTML = menu.map(m=>`<div class="item">
   <div><b>${m.name}</b><small>${m.sub}</small></div>
